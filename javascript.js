@@ -3,7 +3,6 @@ function calculateTotalMarks() {
     const practicalMarks = document.querySelectorAll(".practical-marks");
     const totalMarksElements = document.querySelectorAll(".total-marks");
     const totalWordsElements = document.querySelectorAll(".total-words");
-
     let grandTotal = 0;
 
     for (let i = 0; i < theoryMarks.length; i++) {
@@ -12,42 +11,78 @@ function calculateTotalMarks() {
         const total = theory + practical;
         totalMarksElements[i].textContent = total;
 
-       
+        // Update total in words
         totalWordsElements[i].textContent = getWords(total);
 
         grandTotal += total;
     }
+
+    // Update grand total
     document.getElementById("grand-total").textContent = grandTotal;
     document.getElementById("grand-total-words").textContent = getWords(grandTotal);
+
+    // Calculate and display result, percentage, and grade
     calculateResult();
 }
+
+// Function to get words for total marks
 function getWords(total) {
     const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
     const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
-
+    const hund = ["", "One Hundred", "Two Hundred", "Three Hundred", "Four Hundred", "Five Hundred", "Six Hundred", "Seven Hundred", "Eight Hundred", "Nine Hundred"];
+  
     let words = "";
-
+  
     if (total === 0) {
-        words = "Zero Zero";
+      words = "Zero Zero";
     } else {
-        if (total < 20) {
-            words = ones[total];
-        } else {
-            words = tens[Math.floor(total / 10)] + (total % 10 != 0 ? " " + ones[total % 10] : "");
-        }
+      if (total < 20) {
+        words = ones[total];
+      } else if (total < 100) {
+        words = tens[Math.floor(total / 10)] + (total % 10 != 0 ? " " + ones[total % 10] : "");
+      } else {
+        words = hund[Math.floor(total / 100)] + (total % 100 != 0 ? " " + getWords(total % 100) : "");
+      }
     }
+  
+    return words;
+  }
+// function getWords(total) {
+//     const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+//     const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+//     const hund = ["","","","One Hundred", "Two Hundred", "Three Hundred", "Four Hundred", "Five Hundred", "Six Hundred", "Seven Hundred", "Eight Hundred", "Nine Hundred"];
 
-    return words + " " + ones[Math.floor(total / 100)] + " Hundred";
-}
+//     let words = "";
+
+//     if (total === 0) {
+//         words = "Zero Zero";
+//     } else {
+//         if (total < 20) {
+//             words = ones[total];
+//         } else if(total<20){
+//             words = tens[Math.floor(total / 10)] + (total % 10 != 0 ? " " + ones[total % 10] : "");
+//         }
+//         else {
+//             words = hund[Math.floor(total / 100)] + (total % 100 != 0 ? " " + getWords(total % 100) : "");
+//           }
+      
+//     }
+
+//     return words +" "+ hund[Math.floor(total / 100)];
+// }
+
+// Function to calculate result, percentage, and grade
 function calculateResult() {
     const grandTotal = parseInt(document.getElementById("grand-total").textContent) || 0;
-    const subjectOffered = parseInt(document.getElementById("subject-offered").value) || 8; 
+    const subjectOffered = parseInt(document.getElementById("subject-offered").value) || 8; // Default value
     const percentage = (grandTotal / (subjectOffered * 100)) * 100;
 
-    document.getElementById("result").value = grandTotal >= (subjectOffered * 100 * 0.33) ? "PASS" : "FAIL"; 
+    document.getElementById("result").value = grandTotal >= (subjectOffered * 100 * 0.33) ? "PASS" : "FAIL"; // Assuming 33% passing criteria
     document.getElementById("percentage").value = percentage.toFixed(2) + "%";
     document.getElementById("grade").value = percentage >= 90 ? "A+" : percentage >= 80 ? "A" : percentage >= 70 ? "B+" : percentage >= 60 ? "B" : percentage >= 50 ? "C" : "D";
 }
+
+// Event listener for input fields to update calculations
 const inputFields = document.querySelectorAll(".theory-marks, .practical-marks");
 inputFields.forEach(input => {
     input.addEventListener("input", calculateTotalMarks);
